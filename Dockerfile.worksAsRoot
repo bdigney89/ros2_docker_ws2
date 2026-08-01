@@ -1,0 +1,59 @@
+FROM ros:humble-ros-base
+
+ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
+
+# Install deps
+WORKDIR /ros2_docker_ws2
+
+RUN apt update && apt install -y  \
+    build-essential  \
+    cmake  \
+    git  \
+    python3-colcon-common-extensions  \
+    python3-rosdep  \
+    libboost-all-dev  \
+    nano  \
+    && rm -rf /var/lib/apt/lists/*
+
+
+ARG USERNAME=bdigney
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME  
+    
+
+# Set workspace
+#USER bdigney
+USER 1000:1000
+
+WORKDIR /ros2_docker_ws2
+COPY ./src ./src
+WORKDIR /ros2_docker_ws2/src
+#USER root
+#RUN git clone https://github.com/wimblerobotics/roboclaw_driver.git
+#USER bdigney:bdigney
+USER 1000:1000
+USER root
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+# Build your code
+WORKDIR /ros2_docker_ws2
+#RUN source ~/.bashrc
+#USER root
+#USER 1000:1000
+RUN source /opt/ros/humble/setup.bash 
+RUN  rosdep update \
+&& rosdep install --from-paths src --ignore-src -r -y \
+&& source /opt/ros/humble/setup.bash \
+&& colcon build 
+#USER bdigney
+# Default launch command
+CMD ["/bin/bash"]
+
+#ENTRYPOINT ["/bin/bash"]
