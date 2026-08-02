@@ -38,6 +38,6 @@ COPY ./src ./src
 
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-
+RUN echo "source /ros2_docker_ws2/install/setup.bash" >> ~/.bashrc
 # Default launch command
 ENTRYPOINT ["/bin/bash"]

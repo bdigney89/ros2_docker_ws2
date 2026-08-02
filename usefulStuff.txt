@@ -1,0 +1,6 @@
+source install/setup.bash
+sudo chmod 666 /dev/serial/by-id/usb-Basicmicro_Inc._USB_Roboclaw_2x15A-if00
+
+ros2 launch roboclaw_driver roboclaw_driver.launch.py
+ colcon build
+
