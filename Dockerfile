@@ -1,6 +1,8 @@
 FROM ros:humble-ros-base
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV USER_UID=1000
+ENV USER_GID=1000
 #SHELL ["/bin/bash", "-c"]
 
 # Install deps
@@ -17,9 +19,11 @@ RUN apt update && apt install -y  \
     && rm -rf /var/lib/apt/lists/*
 
 
+
+
 ARG USERNAME=bdigney
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
+#ARG USER_UID=1000
+#ARG USER_GID=$USER_UID
 
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
@@ -29,15 +33,18 @@ RUN groupadd --gid $USER_GID $USERNAME \
     
 RUN apt-get install -y ros-humble-teleop-twist-keyboard
 
+
+
 # Set workspace
 USER bdigney
-#USER 1000:1000
 
 WORKDIR /ros2_docker_ws2
 COPY ./src ./src
 
+USER bdigney
+
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "source /ros2_docker_ws2/install/setup.bash" >> ~/.bashrc
-# Default launch command
+
 ENTRYPOINT ["/bin/bash"]
