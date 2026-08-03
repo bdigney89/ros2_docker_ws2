@@ -16,6 +16,9 @@ RUN apt update && apt install -y  \
     python3-rosdep  \
     libboost-all-dev  \
     nano  \
+    ros-humble-joint-state-publisher \
+    ros-humble-teleop-twist-keyboard \
+    ros-humble-robot-state-publisher \
     && rm -rf /var/lib/apt/lists/*
 
 
